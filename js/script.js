@@ -58,8 +58,14 @@ const rightPaddle = {
 }
 
 const score = {
-    human: 1,
-    computer: 2,
+    human: 0,
+    computer: 0,
+    increaseHuman: function () {
+        this.human++
+    },
+    increaseComputer: function () {
+        this.computer++
+    },
     draw: function () {
         canvasCtx.font = "bold 72px Arial"
         canvasCtx.textAlign = "center"
@@ -71,13 +77,62 @@ const score = {
 }
 
 const ball = {
-    x: 300,
-    y: 200,
+    x: 0,
+    y: 0,
     r: 20,
     speed: 5,
+    directionX: 1,
+    directionY: 1,
+    _calcPosition: function () {
+        // verifica se o jogador 1 fez um ponto (x > largura do campo)
+        if (this.x > field.w - this.r - rightPaddle.w - gapX) {
+            // verifica se a raquete direita está na posição da bola
+            if (this.y + this.r > rightPaddle.y && this.y - this.r < rightPaddle.y + rightPaddle.h) {
+                // rebate a bola invertendo o sinal de x
+                this._reverseX()
+            } else {
+                // pontuar o jogador 1
+                score.increaseHuman()
+                this._pointUp()
+            }
+        }
+        // verifica se o jogador 2 fez um ponto(x < 0)
+        if (this.x < this.r + leftPaddle.w + gapX) {
+            // verifica se a raquete esquerda esta na posição y da bola
+            if (this.y + this.r > leftPaddle.y && this.y - this.r < leftPaddle.y + leftPaddle.h) {
+                // rebate a bola invertendo o sinal de x
+                this._reverseX()
+            } else {
+                // pontuar o jogador 2
+                score.increaseComputer()
+                this._pointUp()
+            }
+        }
+
+        // verifica as laterais superior e inferior do campo
+        if (
+            (this.y - this.r < 0 && this.directionY < 0) ||
+            (this.y > field.h - this.r && this.directionY > 0)) {
+
+            // rebate a bola invertendo o sinal do eixo y    
+            this._reverseY()
+        }
+    },
+    _reverseX: function () {
+        // 1 * -1 = -1 
+        // -1 * -1 = 1
+        this.directionX *= -1
+    },
+    _reverseY: function () {
+        this.directionY *= -1
+    },
+    _pointUp: function () {
+        this.x = field.w / 2
+        this.y = field.h / 2
+    },
     _move: function () {
-        this.x += 1 * this.speed
-        this.y += 1 * this.speed
+        this.x += this.directionX * this.speed
+        this.y += this.directionY * this.speed
     },
     draw: function () {
         canvasCtx.fillStyle = "#ffffff"
@@ -85,6 +140,7 @@ const ball = {
         canvasCtx.arc(this.x, this.y, this.r, 0, 2 * Math.PI, false)
         canvasCtx.fill()
 
+        this._calcPosition()
         this._move()
     }
 }
