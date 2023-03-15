@@ -48,7 +48,7 @@ const rightPaddle = {
     h: 200,
     speed: 5,
     _move: function () {
-        const shouldMiss = Math.random() < 0.1; // 10% chance of missing
+        const shouldMiss = Math.random() < 0.1; // 10% de chance de errar
         if (shouldMiss || this.y + this.h / 2 < ball.y + ball.r) {
             this.y += this.speed;
         } else {
@@ -89,7 +89,7 @@ const ball = {
     x: field.w / 2,
     y: field.h / 2,
     r: 20,
-    speed: 5,
+    speed: 4,
     directionX: 1,
     directionY: 1,
     _calcPosition: function () {
